@@ -87,8 +87,8 @@ function animate(){
     requestAnimationFrame(animate)
 
     if (root){
-    const time = Date.now() * 0.001;
-    root.rotation.y = time;
+    //const time = Date.now() * 0.001;
+    //root.rotation.y = time;
     
     renderer.render(scene,camera)
     
