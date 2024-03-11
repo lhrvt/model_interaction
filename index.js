@@ -9,15 +9,25 @@ let actual_color;
 Btn_Jaune.addEventListener('click', function(event) {
   actual_color = 'yellow'
   boxMesh.material.color.set(actual_color)
+  mixer.clipAction(placard).play()
 });
 Btn_Vert.addEventListener('click', function(event) {
   actual_color = 'green'
   boxMesh.material.color.set(actual_color)
+  mixer.clipAction(congelo).play()
 });
 Btn_Bleu.addEventListener('click', function(event) {
   actual_color = 'blue'
   boxMesh.material.color.set(actual_color)
+  mixer.clipAction(frigo).play()
 });
+
+
+let mixer  ;     
+let placard  ;    
+let frigo  ;    
+let congelo  ; 
+
 
 const raycaster = new THREE.Raycaster();
 document.addEventListener('mousedown', onMouseDown);
@@ -44,21 +54,39 @@ raycaster.setFromCamera(coords, camera);
 const canvas  = document.querySelector('.webgl')
 const scene = new THREE.Scene()
 
+
  const loader = new GLTFLoader()
+
  let root;
 
- loader.load('asset/cuisinne_urp.glb', function(glb){
-    console.log(glb)
-    root = glb.scene;
+ loader.load('asset/cuisinne_urp.glb', function(gltf ){
+    console.log(gltf )
+    
+    
+    mixer = new THREE.AnimationMixer( gltf.scene );
+
+    placard = gltf.animations[0] ; // first animation
+    frigo   = gltf.animations[1] ; // second animation
+    congelo   = gltf.animations[2] ; // second animation
+
+    mixer.clipAction(placard).play()
+
+    root = gltf .scene;
     root.position.set(-0.2,0,2)
-    root.rotation.y = -Math.PI / 2;
+    root.rotation.y = -Math.PI / 2
+
     scene.add(root);
- 
+  
  }, function(xhr){
     console.log(xhr.loaded/xhr.total * 100 + "% loaded")
 }, function(error){
      console.log('An error')
- })
+ } 
+ );
+ 
+
+
+
 
 const light = new THREE.DirectionalLight(0xffffff, 1)
 
@@ -103,7 +131,7 @@ renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 
 renderer.gammaOutput= true
 
-
+var clock = new THREE.Clock();
 function animate(){
     requestAnimationFrame(animate)
 
@@ -114,10 +142,12 @@ function animate(){
     light.position.set(Math.sin(time),1,1)
     light.rotation.y = time;
     root.position.set(Math.sin(time ) *0.1 - 0.2, -0.4, 2)
-    console.log(time_light)
+    //console.log(time_light)
     
     renderer.render(scene,camera)
     
+    const delta = clock.getDelta();
+    mixer.update( delta );
     }
 }
 
