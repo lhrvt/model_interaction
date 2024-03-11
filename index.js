@@ -64,7 +64,7 @@ const light = new THREE.DirectionalLight(0xffffff, 1)
 
 light.intensity = 1;
 
-const ambientLight = new THREE.AmbientLight(0x404040);
+const ambientLight = new THREE.AmbientLight(0xfffffff);
 scene.add(ambientLight);   
 scene.add(light) 
 
@@ -109,19 +109,17 @@ function animate(){
 
     if (root){
     const time = Date.now() * 0.001;
-    const time_light = time * 50;
+    const time_light = Math.sin(0.5 * time * 5)
     boxMesh.rotation.y = time;
     light.position.set(Math.sin(time),1,1)
     light.rotation.y = time;
-    //console.log(light.position)
+    root.position.set(Math.sin(time ) *0.1 - 0.2, -0.4, 2)
+    console.log(time_light)
     
     renderer.render(scene,camera)
     
     }
 }
-
-
-
 
 
 animate()
