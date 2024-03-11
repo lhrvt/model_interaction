@@ -33,7 +33,7 @@ const scene = new THREE.Scene()
  loader.load('asset/cuisinne_urp.glb', function(glb){
     console.log(glb)
     root = glb.scene;
-    root.position.set(0,0,0)
+    root.position.set(0,0,1)
     root.rotation.y = -Math.PI / 2;
     scene.add(root);
  
@@ -45,7 +45,10 @@ const scene = new THREE.Scene()
 
 const light = new THREE.DirectionalLight(0xffffff, 1)
 light.position.set(2,2,5)
+//light.instensity
 scene.add(light)
+const ambientLight = new THREE.AmbientLight(0xffffff);
+scene.add(ambientLight);    
 
 
 const geometry = new THREE.BoxGeometry(1,1,1)
@@ -54,7 +57,8 @@ const material = new THREE.MeshBasicMaterial({
     color: 'purple'
 })
 const boxMesh = new THREE.Mesh(geometry, material)
-
+boxMesh.position.set(0,2,1)
+boxMesh.scale.set(0.5,0.5,0.5)
 scene.add(boxMesh)
 
 
@@ -87,8 +91,8 @@ function animate(){
     requestAnimationFrame(animate)
 
     if (root){
-    //const time = Date.now() * 0.001;
-    //root.rotation.y = time;
+    const time = Date.now() * 0.001;
+    boxMesh.rotation.y = time;
     
     renderer.render(scene,camera)
     
