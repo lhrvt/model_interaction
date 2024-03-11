@@ -1,6 +1,23 @@
 import * as THREE from './build/three.module.js'
 import {GLTFLoader} from './build/GLTFLoader.js'
 
+const Btn_Vert = document.getElementById('btn_vert');
+const Btn_Jaune = document.getElementById('btn_jaune');
+const Btn_Bleu = document.getElementById('btn_bleu');
+let actual_color;
+
+Btn_Jaune.addEventListener('click', function(event) {
+  actual_color = 'yellow'
+  boxMesh.material.color.set(actual_color)
+});
+Btn_Vert.addEventListener('click', function(event) {
+  actual_color = 'green'
+  boxMesh.material.color.set(actual_color)
+});
+Btn_Bleu.addEventListener('click', function(event) {
+  actual_color = 'blue'
+  boxMesh.material.color.set(actual_color)
+});
 
 const raycaster = new THREE.Raycaster();
 document.addEventListener('mousedown', onMouseDown);
@@ -17,8 +34,8 @@ raycaster.setFromCamera(coords, camera);
   const intersections = raycaster.intersectObjects(scene.children, true);
   if (intersections.length > 0) {
     const selectedObject = intersections[0].object;
-    const color = new THREE.Color(Math.random(), Math.random(), Math.random()); //RANDOMN COLOR
-    selectedObject.material.color = color;
+    
+    selectedObject.material.color.set(actual_color)
     console.log(selectedObject.name + "was clicked!");
   }
 
@@ -33,7 +50,7 @@ const scene = new THREE.Scene()
  loader.load('asset/cuisinne_urp.glb', function(glb){
     console.log(glb)
     root = glb.scene;
-    root.position.set(0,0,1)
+    root.position.set(-0.2,0,2)
     root.rotation.y = -Math.PI / 2;
     scene.add(root);
  
@@ -44,20 +61,21 @@ const scene = new THREE.Scene()
  })
 
 const light = new THREE.DirectionalLight(0xffffff, 1)
-light.position.set(2,2,5)
-//light.instensity
-scene.add(light)
-const ambientLight = new THREE.AmbientLight(0xffffff);
-scene.add(ambientLight);    
+
+light.intensity = 1;
+
+const ambientLight = new THREE.AmbientLight(0x404040);
+scene.add(ambientLight);   
+scene.add(light) 
 
 
-const geometry = new THREE.BoxGeometry(1,1,1)
-const material = new THREE.MeshBasicMaterial({
+const geometry = new THREE.SphereGeometry(0.4,16,16)
+const material = new THREE.MeshToonMaterial({
 
     color: 'purple'
 })
 const boxMesh = new THREE.Mesh(geometry, material)
-boxMesh.position.set(0,2,1)
+boxMesh.position.set(-0.7,2.5,1)
 boxMesh.scale.set(0.5,0.5,0.5)
 scene.add(boxMesh)
 
@@ -82,9 +100,8 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 
 renderer.gammaOutput= true
-
-
 
 
 function animate(){
@@ -92,12 +109,17 @@ function animate(){
 
     if (root){
     const time = Date.now() * 0.001;
+    const time_light = time * 50;
     boxMesh.rotation.y = time;
+    light.position.set(Math.sin(time),1,1)
+    light.rotation.y = time;
+    //console.log(light.position)
     
     renderer.render(scene,camera)
     
     }
 }
+
 
 
 
