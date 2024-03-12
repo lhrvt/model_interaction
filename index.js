@@ -6,26 +6,37 @@ const Btn_Jaune = document.getElementById('btn_jaune');
 const Btn_Bleu = document.getElementById('btn_bleu');
 const Btn_Neutral = document.getElementById('btn_none');
 let actual_color;
+var color_change = false;
 
-console.log(actual_color)
+const jaune_pale = new THREE.Color(0xf5c722);
+const vert = new THREE.Color(0x6be03d);
+const bleu = new THREE.Color(0x6078e0);
+
 Btn_Jaune.addEventListener('click', function(event) {
-  actual_color = 'yellow'
+  color_change = true;
+  actual_color = jaune_pale
   boxMesh.material.color.set(actual_color)
   
 });
 Btn_Vert.addEventListener('click', function(event) {
-  actual_color = 'green'
+  color_change = true;
+  actual_color = vert
   boxMesh.material.color.set(actual_color)
  
   
 });
 Btn_Bleu.addEventListener('click', function(event) {
-  actual_color = 'blue'
-  boxMesh.material.color.set(actual_color)
+  color_change = true;
+  actual_color = bleu
+  boxMesh.material.color.set(bleu)
   
 });
 Btn_Neutral.addEventListener('click', function(event) {
-  // Ne rien faire lors du clic sur ce bouton
+  
+  color_change = false;
+  actual_color = 'white'
+  boxMesh.material.color.set(actual_color)
+  
 });
 
 
@@ -34,23 +45,28 @@ let mixer  ;
 let placard  ;    
 let frigo  ;    
 let congelo  ; 
+let plante  ;
 
 function playanimation(obj){
 
   if (animation_chargee.includes(obj)) {
     console.log(obj + " est dans le tableau.");
     mixer.stopAllAction()
-      if(obj.startsWith("porte_meuble"))
+      if(obj.startsWith("CLI_placard"))
       {
         mixer.clipAction(placard).play()
       }
-      if(obj.startsWith("Cube005"))
+      if(obj.startsWith("CLI_plante"))
       {
-        mixer.clipAction(congelo).play()
+        mixer.clipAction(plante).play()
       }
-      if(obj.startsWith("Cube.001_1"))
+      if(obj.startsWith("CLI_frigo"))
       {
         mixer.clipAction(frigo).play()
+      }
+      if(obj.startsWith("CLI_congelo"))
+      {
+        mixer.clipAction(congelo).play()
       }
   } 
   else {
@@ -72,9 +88,11 @@ raycaster.setFromCamera(coords, camera);
 
   const intersections = raycaster.intersectObjects(scene.children, true);
   if (intersections.length > 0) {
+    console.log(color_change)
     const selectedObject = intersections[0].object;
-    
-    selectedObject.material.color.set(actual_color)
+    if(color_change == true){
+    selectedObject.material.color.set(actual_color )
+    }
     //console.log(selectedObject.name + "was clicked!");
     playanimation(selectedObject.name)
   }
@@ -89,7 +107,7 @@ const scene = new THREE.Scene()
 
  let root;
 const animation_chargee = []
-animation_chargee.push("porte_meuble_droite", "porte_meuble_gauche", "Cube005", "Cube.001_1")
+animation_chargee.push("CLI_placard", "CLI_frigo", "CLI_congelo","CLI_plante")
  loader.load('asset/cuisinne_urp.glb', function(gltf ){
     console.log(gltf )
     
@@ -98,7 +116,8 @@ animation_chargee.push("porte_meuble_droite", "porte_meuble_gauche", "Cube005", 
 
     frigo = gltf.animations[0] ; // first animation
     congelo   = gltf.animations[1] ; // second animation
-    placard   = gltf.animations[2] ; // second animation
+    placard   = gltf.animations[2] ; 
+    plante   = gltf.animations[3] ;// second animation
 
     placard.loop = false;
     mixer.clipAction(placard).play()
@@ -132,7 +151,7 @@ scene.add(light)
 const geometry = new THREE.SphereGeometry(0.4,16,16)
 const material = new THREE.MeshToonMaterial({
 
-    color: 'purple'
+    color: 'white'
 })
 const boxMesh = new THREE.Mesh(geometry, material)
 boxMesh.position.set(-0.7,2.5,1)
@@ -144,21 +163,23 @@ scene.add(boxMesh)
 
 const sizes = {
     width : window.innerWidth,
-    height : window.innerHeight
+    height : window.innerHeight 
 }
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height, 0.1, 100);
-camera.position.set(0,1,4);
-scene.add(camera)
+camera.position.set(0,0.7,4);
+scene.add(camera)- document.querySelector('p').offsetHeight - document.querySelector('.button-container')
 
 
 const renderer = new THREE.WebGLRenderer({
-    canvas : canvas
+    canvas : canvas 
 })
 
 
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setSize(sizes.width , sizes.height )
+
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, ))
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 
 renderer.gammaOutput= true
