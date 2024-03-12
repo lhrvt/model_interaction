@@ -4,23 +4,30 @@ import {GLTFLoader} from './build/GLTFLoader.js'
 const Btn_Vert = document.getElementById('btn_vert');
 const Btn_Jaune = document.getElementById('btn_jaune');
 const Btn_Bleu = document.getElementById('btn_bleu');
+const Btn_Neutral = document.getElementById('btn_none');
 let actual_color;
 
+console.log(actual_color)
 Btn_Jaune.addEventListener('click', function(event) {
   actual_color = 'yellow'
   boxMesh.material.color.set(actual_color)
-  mixer.clipAction(placard).play()
+  
 });
 Btn_Vert.addEventListener('click', function(event) {
   actual_color = 'green'
   boxMesh.material.color.set(actual_color)
-  mixer.clipAction(congelo).play()
+ 
+  
 });
 Btn_Bleu.addEventListener('click', function(event) {
   actual_color = 'blue'
   boxMesh.material.color.set(actual_color)
-  mixer.clipAction(frigo).play()
+  
 });
+Btn_Neutral.addEventListener('click', function(event) {
+  // Ne rien faire lors du clic sur ce bouton
+});
+
 
 
 let mixer  ;     
@@ -28,7 +35,29 @@ let placard  ;
 let frigo  ;    
 let congelo  ; 
 
+function playanimation(obj){
 
+  if (animation_chargee.includes(obj)) {
+    console.log(obj + " est dans le tableau.");
+    mixer.stopAllAction()
+      if(obj.startsWith("porte_meuble"))
+      {
+        mixer.clipAction(placard).play()
+      }
+      if(obj.startsWith("Cube005"))
+      {
+        mixer.clipAction(congelo).play()
+      }
+      if(obj.startsWith("Cube.001_1"))
+      {
+        mixer.clipAction(frigo).play()
+      }
+  } 
+  else {
+    console.log(obj + " NOPE");
+}
+
+}
 const raycaster = new THREE.Raycaster();
 document.addEventListener('mousedown', onMouseDown);
 
@@ -46,7 +75,8 @@ raycaster.setFromCamera(coords, camera);
     const selectedObject = intersections[0].object;
     
     selectedObject.material.color.set(actual_color)
-    console.log(selectedObject.name + "was clicked!");
+    //console.log(selectedObject.name + "was clicked!");
+    playanimation(selectedObject.name)
   }
 
 }
@@ -58,17 +88,19 @@ const scene = new THREE.Scene()
  const loader = new GLTFLoader()
 
  let root;
-
+const animation_chargee = []
+animation_chargee.push("porte_meuble_droite", "porte_meuble_gauche", "Cube005", "Cube.001_1")
  loader.load('asset/cuisinne_urp.glb', function(gltf ){
     console.log(gltf )
     
     
     mixer = new THREE.AnimationMixer( gltf.scene );
 
-    placard = gltf.animations[0] ; // first animation
-    frigo   = gltf.animations[1] ; // second animation
-    congelo   = gltf.animations[2] ; // second animation
+    frigo = gltf.animations[0] ; // first animation
+    congelo   = gltf.animations[1] ; // second animation
+    placard   = gltf.animations[2] ; // second animation
 
+    placard.loop = false;
     mixer.clipAction(placard).play()
 
     root = gltf .scene;
@@ -146,8 +178,8 @@ function animate(){
     
     renderer.render(scene,camera)
     
-    const delta = clock.getDelta();
-    mixer.update( delta );
+    
+    mixer.update(0.01 );
     }
 }
 

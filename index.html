@@ -7,12 +7,17 @@
     <title>3D Model ThreeJS</title>
 </head>
 <body>
-
+    <buttonid id = "active_pinceau">Change Color</button>
     <button id="btn_jaune"> Jaune</button>
     <button id="btn_vert"> Vert</button>
     <button id="btn_bleu"> Bleu</button>
+    <button id="btn_none"> None</button>
     <style> 
-
+    #active_pinceau{
+        
+        background-color: #b9b9b9; 
+        color: blueviolet;
+    }
     button {
         background-color: #b9b9b9; 
         size : 25px;
@@ -20,7 +25,9 @@
         display: inline-block;
         padding: 15px 32px;
         font-size: 16px;
+        
     }
+    
     </style>
     <canvas class = "webgl"></canvas>
 
